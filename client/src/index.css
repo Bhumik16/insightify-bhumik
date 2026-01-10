@@ -1,44 +1,44 @@
 /* client/src/index.css */
 :root {
   /* =========================================
-     Color Palette (Deep Midnight & Neon)
+     Color Palette (Professional Dark Mode)
      ========================================= */
 
-  /* Brand Colors */
-  --color-primary: #8B5CF6;
-  /* Violets Are Blue */
-  --color-primary-hover: #7C3AED;
-  /* Electric Violet */
-  --color-secondary: #3B82F6;
-  /* Blue (Gradient Partner) */
+  /* Brand Colors - Monochrome */
+  --color-primary: #ffffff;
+  /* Pure White */
+  --color-primary-hover: #e5e5e5;
+  /* Near White */
+  --color-secondary: #cccccc;
+  /* Light Gray */
 
   /* Backgrounds */
-  --color-bg-main: #0F172A;
-  /* Rich Black / Deep Blue */
-  --color-bg-card: #1E293B;
-  /* Charcoal / Lighter Blue */
-  --color-bg-glass: rgba(30, 41, 59, 0.70);
+  --color-bg-main: #000000;
+  /* Pure Black */
+  --color-bg-card: #0a0a0a;
+  /* Near Black */
+  --color-bg-glass: rgba(10, 10, 10, 0.95);
   /* Glass effect base */
 
   /* Text */
-  --color-text-main: #F8FAFC;
-  /* White/Off-white */
-  --color-text-muted: #94A3B8;
-  /* Slate Gray */
-  --color-text-accent: #A78BFA;
-  /* Light Purple */
+  --color-text-main: #ffffff;
+  /* Pure White */
+  --color-text-muted: #999999;
+  /* Medium Gray */
+  --color-text-accent: #e5e5e5;
+  /* Near White */
 
-  /* Semantic / Data Viz */
-  --color-success: #10B981;
-  --color-warning: #F59E0B;
-  --color-error: #EF4444;
-  --color-info: #3B82F6;
+  /* Semantic / Data Viz - Grayscale */
+  --color-success: #d2d2d2;
+  --color-warning: #b2b2b2;
+  --color-error: #e5e5e5;
+  --color-info: #bfbfbf;
 
   /* =========================================
      Typography (Outfit / Inter)
      ========================================= */
-  --font-family-base: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  --font-family-heading: 'Outfit', sans-serif;
+  --font-family-base: "Inter", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font-family-heading: "Outfit", sans-serif;
 
   /* =========================================
      Spacing & Layout
@@ -61,7 +61,8 @@
   --radius-lg: 1rem;
 
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5),
+    0 4px 6px -2px rgba(0, 0, 0, 0.3);
 
   --glass-border: 1px solid rgba(255, 255, 255, 0.08);
   /* More subtle */
@@ -88,9 +89,16 @@ body {
   /* Critical: kill horizontal scroll at root */
   font-family: var(--font-family-base);
   background-color: var(--color-bg-main);
-  background-image:
-    radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.08), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.08), transparent 25%);
+  background-image: radial-gradient(
+      circle at 15% 50%,
+      rgba(255, 255, 255, 0.03),
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 85% 30%,
+      rgba(255, 255, 255, 0.03),
+      transparent 25%
+    );
   color: var(--color-text-main);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -134,13 +142,49 @@ ul {
   background: var(--color-bg-glass);
   backdrop-filter: var(--backdrop-blur);
   -webkit-backdrop-filter: var(--backdrop-blur);
-  border: var(--glass-border);
-  box-shadow: var(--glass-shadow);
+  border: 1px solid #1a1a1a;
+  box-shadow: 0 1px 3px 0 rgba(255, 255, 255, 0.05),
+    0 1px 2px 0 rgba(255, 255, 255, 0.03);
   border-radius: var(--radius-md);
 }
 
+/* =========================================
+   Animations
+   ========================================= */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
 .text-gradient {
-  background: linear-gradient(135deg, var(--color-text-main) 0%, var(--color-text-accent) 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #bfbfbf 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -208,7 +252,11 @@ ul {
 }
 
 .nav-item.active {
-  background: linear-gradient(90deg, rgba(139, 92, 246, 0.15) 0%, transparent 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(139, 92, 246, 0.15) 0%,
+    transparent 100%
+  );
   color: var(--color-primary);
   border-left: 3px solid var(--color-primary);
 }
@@ -265,7 +313,11 @@ ul {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
   display: flex;
   align-items: center;
   justify-content: center;
