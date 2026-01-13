@@ -37,8 +37,8 @@
   height: 6px;
   background: radial-gradient(
     circle,
-    rgb(255, 255, 255) 0%,
-    rgba(252, 252, 252, 0.8) 50%,
+    rgb(139, 92, 246, 1) 0%,
+    rgba(167, 139, 250, 0.8) 50%,
     transparent 100%
   );
   border-radius: 50%;

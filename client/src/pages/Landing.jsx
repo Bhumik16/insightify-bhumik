@@ -5,7 +5,15 @@ import { TestimonialsSection } from "../components/ui/testimonials-with-marquee"
 import ValueFlowSection from "../components/ui/ValueFlowSection";
 import DashboardShowcase from "../components/ui/DashboardShowcase";
 import StepsSection from "../components/ui/StepsSection";
-import { ChevronDown } from "lucide-react";
+import {
+  ChevronDown,
+  Brain,
+  Tags,
+  FileText,
+  SlidersHorizontal,
+  MessageSquare,
+  TrendingUp,
+} from "lucide-react";
 import "./Landing.css";
 
 export default function Landing() {
@@ -98,10 +106,11 @@ export default function Landing() {
                         <span>Powered by Gemini 1.5 + RAG</span>
                     </div> */}
 
-          <h1 className="hero-title pt-25" >
+          <h1 className="hero-title pt-25">
             Transform <span style={{ color: "#a855f7" }}>Reviews</span> into
             <br />
-            <span className="gradient-text">Actionable</span> <span style={{ color: "#a855f7"}}>Growth</span>
+            <span className="gradient-text">Actionable</span>{" "}
+            <span style={{ color: "#a855f7" }}>Growth</span>
           </h1>
 
           <p className="hero-description">
@@ -222,95 +231,98 @@ export default function Landing() {
           >
             {[
               {
-                icon: "",
+                icon: Brain,
                 title: "AI-Powered Review Analysis",
                 desc: "Analyze user reviews with advanced AI algorithms, identifying key topics, sentiments, and trends to gain valuable insights.",
               },
               {
-                icon: "",
+                icon: Tags,
                 title: "Automated Tag Generation",
                 desc: "Automatically generate relevant tags for reviews to categorize and streamline feedback for better understanding.",
               },
               {
-                icon: "",
+                icon: FileText,
                 title: "Review Summarization",
                 desc: "Condense long reviews into concise summaries, making it easier to grasp user feedback at a glance.",
               },
               {
-                icon: "",
+                icon: SlidersHorizontal,
                 title: "Advanced Filtering Options",
                 desc: "Filter reviews by tags, time, or quality to focus on the most relevant feedback for your needs.",
               },
               {
-                icon: "",
+                icon: MessageSquare,
                 title: "AI-Powered Responses",
                 desc: "Respond to user reviews with saved templates or AI-generated replies, saving time while ensuring professionalism.",
               },
               {
-                icon: "",
+                icon: TrendingUp,
                 title: "Insightful Trends and Reports",
                 desc: "Stay ahead with data-driven reports that highlight user trends and actionable insights over time.",
               },
-            ].map((feature, index) => (
-              <div
-                key={index}
-                style={{
-                  padding: "2rem",
-                  background: "#151515",
-                  border: "1px solid rgba(255, 255, 255, 0.08)",
-                  borderRadius: "16px",
-                  transition: "all 0.3s ease",
-                  cursor: "pointer",
-                  position: "relative",
-                  zIndex: 10,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-8px)";
-                  e.currentTarget.style.borderColor = "#8b5cf6";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.borderColor =
-                    "rgba(255, 255, 255, 0.08)";
-                }}
-              >
+            ].map((feature, index) => {
+              const IconComponent = feature.icon;
+              return (
                 <div
+                  key={index}
                   style={{
-                    width: "64px",
-                    height: "64px",
-                    borderRadius: "50%",
-                    background: "rgba(139, 92, 246, 0.1)",
-                    border: "1px solid rgba(139, 92, 246, 0.3)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    margin: "0 auto 1.5rem",
-                    fontSize: "2rem",
+                    padding: "2rem",
+                    background: "#151515",
+                    border: "1px solid rgba(255, 255, 255, 0.08)",
+                    borderRadius: "16px",
+                    transition: "all 0.3s ease",
+                    cursor: "pointer",
+                    position: "relative",
+                    zIndex: 10,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-8px)";
+                    e.currentTarget.style.borderColor = "#8b5cf6";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.borderColor =
+                      "rgba(255, 255, 255, 0.08)";
                   }}
                 >
-                  {feature.icon}
+                  <div
+                    style={{
+                      width: "64px",
+                      height: "64px",
+                      borderRadius: "50%",
+                      background: "rgba(139, 92, 246, 0.1)",
+                      border: "1px solid rgba(139, 92, 246, 0.3)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      margin: "0 auto 1.5rem",
+                      fontSize: "2rem",
+                    }}
+                  >
+                    <IconComponent size={32} color="#8b5cf6" />
+                  </div>
+                  <h3
+                    style={{
+                      fontSize: "1.25rem",
+                      fontWeight: 600,
+                      marginBottom: "1rem",
+                      color: "white",
+                    }}
+                  >
+                    {feature.title}
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: "0.95rem",
+                      color: "#9ca3af",
+                      lineHeight: "1.6",
+                    }}
+                  >
+                    {feature.desc}
+                  </p>
                 </div>
-                <h3
-                  style={{
-                    fontSize: "1.25rem",
-                    fontWeight: 600,
-                    marginBottom: "1rem",
-                    color: "white",
-                  }}
-                >
-                  {feature.title}
-                </h3>
-                <p
-                  style={{
-                    fontSize: "0.95rem",
-                    color: "#9ca3af",
-                    lineHeight: "1.6",
-                  }}
-                >
-                  {feature.desc}
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
