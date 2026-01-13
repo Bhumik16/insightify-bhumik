@@ -19,8 +19,8 @@ import {
   History,
   FolderOpen,
   File,
-  TrendingUp,   
-  AlertCircle,  
+  TrendingUp,
+  AlertCircle,
   Target,
   BarChart2 // Added for the graph icon
 } from "lucide-react";
@@ -39,6 +39,25 @@ const Profile = () => {
     { id: 3, name: "User Retention Study.pdf", date: "Jan 10, 2026", size: "3.8 MB" },
     { id: 4, name: "Q3 Performance Review.pdf", date: "Dec 20, 2025", size: "2.2 MB" },
     { id: 5, name: "Spotify Feature Request Log.csv", date: "Dec 15, 2025", size: "850 KB" },
+  ];
+
+  // Mock Data for the Usage Graph (Last 14 days)
+  // height represents percentage relative to max
+  const activityData = [
+    { day: "Mon", count: 2, height: "30%" },
+    { day: "Tue", count: 5, height: "60%" },
+    { day: "Wed", count: 8, height: "90%" },
+    { day: "Thu", count: 3, height: "40%" },
+    { day: "Fri", count: 6, height: "70%" },
+    { day: "Sat", count: 1, height: "20%" },
+    { day: "Sun", count: 0, height: "5%" },
+    { day: "Mon", count: 4, height: "50%" },
+    { day: "Tue", count: 7, height: "80%" },
+    { day: "Wed", count: 9, height: "100%" }, // Peak
+    { day: "Thu", count: 5, height: "60%" },
+    { day: "Fri", count: 8, height: "90%" },
+    { day: "Sat", count: 2, height: "30%" },
+    { day: "Sun", count: 1, height: "15%" },
   ];
 
   // Add keyframe animations similar to Dashboard
@@ -275,56 +294,55 @@ const Profile = () => {
 
         {/* --- NEW: USAGE FREQUENCY GRAPH --- */}
         <div className="bg-[#09090b] rounded-xl border border-white/10 p-6 md:p-8">
-            <div className="flex flex-col md:flex-row justify-between items-end md:items-center mb-6 gap-4">
-                <div>
-                    <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                        <BarChart2 className="text-indigo-400" size={20} /> Analysis Frequency
-                    </h3>
-                    <p className="text-zinc-500 text-sm mt-1">Your usage activity over the last 14 days.</p>
-                </div>
-                <div className="flex items-center gap-2">
-                    <div className="text-right">
-                        <span className="block text-2xl font-bold text-white">61</span>
-                        <span className="text-xs text-zinc-500">Scans in 14 days</span>
-                    </div>
-                </div>
+          <div className="flex flex-col md:flex-row justify-between items-end md:items-center mb-6 gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                <BarChart2 className="text-indigo-400" size={20} /> Analysis Frequency
+              </h3>
+              <p className="text-zinc-500 text-sm mt-1">Your usage activity over the last 14 days.</p>
             </div>
-
-            {/* The Graph Container */}
-            <div className="w-full h-40 flex items-end justify-between gap-2 md:gap-4 pt-4 border-t border-white/5">
-                {activityData.map((data, index) => (
-                    <div 
-                        key={index} 
-                        className="relative group flex-1 flex flex-col justify-end items-center h-full"
-                        onMouseEnter={() => setHoveredDay(index)}
-                        onMouseLeave={() => setHoveredDay(null)}
-                    >
-                        {/* Tooltip */}
-                        <div className={`absolute -top-10 bg-zinc-800 text-white text-xs py-1 px-2 rounded-md border border-white/10 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 ${hoveredDay === index ? 'opacity-100' : 'opacity-0'}`}>
-                            {data.count} Scans • {data.day}
-                            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-zinc-800"></div>
-                        </div>
-
-                        {/* The Bar */}
-                        <div 
-                            style={{ height: data.height }} 
-                            className={`w-full max-w-[40px] rounded-t-sm transition-all duration-500 ease-out ${
-                                hoveredDay === index 
-                                ? 'bg-indigo-400 shadow-[0_0_15px_rgba(129,140,248,0.5)]' 
-                                : 'bg-zinc-800 hover:bg-zinc-700'
-                            } relative overflow-hidden`}
-                        >
-                             {/* Gradient Overlay for "Active" look */}
-                             <div className="absolute inset-0 bg-gradient-to-t from-indigo-600/40 to-transparent"></div>
-                        </div>
-
-                        {/* X-Axis Label */}
-                        <span className="text-[10px] text-zinc-600 mt-2 font-medium uppercase tracking-wider hidden sm:block">
-                            {data.day}
-                        </span>
-                    </div>
-                ))}
+            <div className="flex items-center gap-2">
+              <div className="text-right">
+                <span className="block text-2xl font-bold text-white">61</span>
+                <span className="text-xs text-zinc-500">Scans in 14 days</span>
+              </div>
             </div>
+          </div>
+
+          {/* The Graph Container */}
+          <div className="w-full h-40 flex items-end justify-between gap-2 md:gap-4 pt-4 border-t border-white/5">
+            {activityData.map((data, index) => (
+              <div
+                key={index}
+                className="relative group flex-1 flex flex-col justify-end items-center h-full"
+                onMouseEnter={() => setHoveredDay(index)}
+                onMouseLeave={() => setHoveredDay(null)}
+              >
+                {/* Tooltip */}
+                <div className={`absolute -top-10 bg-zinc-800 text-white text-xs py-1 px-2 rounded-md border border-white/10 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 ${hoveredDay === index ? 'opacity-100' : 'opacity-0'}`}>
+                  {data.count} Scans • {data.day}
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-zinc-800"></div>
+                </div>
+
+                {/* The Bar */}
+                <div
+                  style={{ height: data.height }}
+                  className={`w-full max-w-[40px] rounded-t-sm transition-all duration-500 ease-out ${hoveredDay === index
+                      ? 'bg-indigo-400 shadow-[0_0_15px_rgba(129,140,248,0.5)]'
+                      : 'bg-zinc-800 hover:bg-zinc-700'
+                    } relative overflow-hidden`}
+                >
+                  {/* Gradient Overlay for "Active" look */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-indigo-600/40 to-transparent"></div>
+                </div>
+
+                {/* X-Axis Label */}
+                <span className="text-[10px] text-zinc-600 mt-2 font-medium uppercase tracking-wider hidden sm:block">
+                  {data.day}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
       </div>
