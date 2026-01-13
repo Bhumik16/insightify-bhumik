@@ -1,19 +1,73 @@
 const { db } = require('../config/firebase');
 const { resolveAppId, getAppDetails, getReviews, normalizeData } = require('../services/playStoreService');
-const { addJob } = require('../services/queueService');
+const { analyzeReviews } = require('../services/aiService');
 
-const CACHE_DURATION_HOURS = 12;
+// ... existing helpers ...
 
-// Helper to check cache freshness
-const isCacheValid = (timestamp) => {
-    if (!timestamp) return false;
-    const now = new Date();
-    const cacheDate = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    const diffHours = (now - cacheDate) / (1000 * 60 * 60);
-    return diffHours < CACHE_DURATION_HOURS;
+exports.startAI = async (req, res) => {
+    try {
+        const { appId } = req.body;
+        const userId = req.user.uid;
+
+        if (!appId) return res.status(400).json({ error: 'App ID is required' });
+
+        // Check if data exists
+        const userAppRef = db.collection('users').doc(userId).collection('apps').doc(appId);
+        const reviewsRef = userAppRef.collection('data').doc('reviews');
+        const metaRef = userAppRef.collection('data').doc('metadata');
+
+        const reviewsSnap = await reviewsRef.get();
+        if (!reviewsSnap.exists) {
+            return res.status(404).json({ error: 'No reviews found. Please scrape app first.' });
+        }
+
+        // Return immediately
+        res.json({ status: 'processing', message: 'AI Analysis started' });
+
+        // Background Processing
+        (async () => {
+            try {
+                console.log(`🧠 Starting AI Analysis for ${appId}...`);
+                const reviews = reviewsSnap.data().list || [];
+                const metaSnap = await metaRef.get();
+                const metadata = metaSnap.exists ? metaSnap.data() : { title: appId, genre: 'Unknown' };
+
+                const analysis = await analyzeReviews(reviews, metadata);
+
+                // Save to Firestore
+                const analysisRef = userAppRef.collection('data').doc('analysis');
+                await analysisRef.set({
+                    ...analysis,
+                    lastAnalyzed: new Date(),
+                    version: '1.0'
+                });
+
+                console.log(`🧠 AI Analysis saved for ${appId}`);
+
+                // Emit WebSocket Event
+                const io = req.app.get('io');
+                if (io) {
+                    io.to(appId).emit('analysis_complete', analysis);
+                    console.log(`📡 Emitted analysis_complete to room ${appId}`);
+                }
+
+            } catch (err) {
+                console.error(`❌ AI Analysis failed for ${appId}:`, err);
+                const io = req.app.get('io');
+                if (io) {
+                    io.to(appId).emit('analysis_error', { error: err.message });
+                }
+            }
+        })();
+
+    } catch (error) {
+        console.error('Trigger AI error:', error);
+        return res.status(500).json({ error: error.message });
+    }
 };
 
 exports.analyzeApp = async (req, res) => {
+    // ... existing analyzeApp implementation ...
     try {
         const { term } = req.body;
         const userId = req.user.uid; // From auth middleware
@@ -47,15 +101,6 @@ exports.analyzeApp = async (req, res) => {
         }
 
         // 3. Queue Job if not cached or expired
-        // We don't want to wait for the scrape to finish in the request
-        // But for simplicity in this demo, accessing the result immediately is often preferred by users.
-        // However, the requirements asked for a background job mechanism.
-        // let's start the job and return "pending" or "processing".
-        // Or, since the user wants to "Visualize all the data", we can return 'processing' and let frontend poll.
-
-        // To avoid concurrent scrapes for the same app, we could check a "status" field in Firestore,
-        // but the queue limit helps.
-
         console.log(`Queueing scrape for ${appId} (user: ${userId})`);
 
         addJob(async () => {
@@ -63,6 +108,9 @@ exports.analyzeApp = async (req, res) => {
                 console.log(`📦 Background job started for ${appId} (user: ${userId})`);
                 await performScrape(appId, userId);
                 console.log(`📦 Background job completed for ${appId}`);
+
+                // Optional: Auto-trigger AI here if desired?
+                // For now, let's keep it separate or client-triggered
             } catch (err) {
                 console.error(`📦 Background job FAILED for ${appId}:`, err.message);
                 console.error(`   Stack:`, err.stack);
@@ -87,37 +135,40 @@ exports.getAppResults = async (req, res) => {
 
         // Try to get metadata (handle NOT_FOUND for pending scrapes)
         const userId = req.user.uid; // From auth middleware
-        let metaSnap, reviewsSnap;
+        let metaSnap, reviewsSnap, analysisSnap;
 
         try {
-            const metaRef = db.collection('users').doc(userId).collection('apps').doc(appId).collection('data').doc('metadata');
-            metaSnap = await metaRef.get();
+            const dataRef = db.collection('users').doc(userId).collection('apps').doc(appId).collection('data');
+
+            // Parallel fetch
+            const [meta, reviews, analysis] = await Promise.all([
+                dataRef.doc('metadata').get(),
+                dataRef.doc('reviews').get(),
+                dataRef.doc('analysis').get()
+            ]);
+
+            metaSnap = meta;
+            reviewsSnap = reviews;
+            analysisSnap = analysis;
+
         } catch (firestoreError) {
             // If Firestore throws NOT_FOUND, data isn't ready yet
             return res.status(404).json({ error: 'Data not found or still processing' });
         }
 
-        if (!metaSnap.exists) {
+        if (!metaSnap || !metaSnap.exists) {
             return res.status(404).json({ error: 'Data not found or still processing' });
         }
 
         const metadata = metaSnap.data();
-
-        // Get Reviews (also handle NOT_FOUND)
-        try {
-            const reviewsRef = db.collection('users').doc(userId).collection('apps').doc(appId).collection('data').doc('reviews');
-            reviewsSnap = await reviewsRef.get();
-        } catch (reviewsError) {
-            // Reviews might not exist yet, return empty
-            reviewsSnap = null;
-        }
-
         const reviewsData = reviewsSnap?.exists ? reviewsSnap.data() : { list: [] };
+        const analysisData = analysisSnap?.exists ? analysisSnap.data() : null;
 
         res.json({
             appId,
             metadata,
-            reviews: reviewsData.list || []
+            reviews: reviewsData.list || [],
+            analysis: analysisData // Return analysis if exists
         });
 
     } catch (error) {
@@ -128,6 +179,7 @@ exports.getAppResults = async (req, res) => {
 
 // Internal function to perform the scrape and save to DB
 async function performScrape(appId, userId) {
+    // ... existing performScrape ...
     console.log(`Starting scrape for ${appId}...`);
 
     try {
