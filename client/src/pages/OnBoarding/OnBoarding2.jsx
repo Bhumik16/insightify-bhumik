@@ -65,7 +65,7 @@ const OnBoarding2 = () => {
         {/* Progress Bar */}
         <div className="mb-12 max-w-lg mx-auto">
             <div className="flex justify-between items-end text-xs font-medium text-zinc-500 mb-3">
-                <span className="text-zinc-300">Step 2 of 3</span>
+                <span className="text-zinc-300">Step 2 of 5</span>
                 <span>Role Selection</span>
             </div>
             {/* The Track */}

@@ -103,7 +103,7 @@ const OnBoarding1 = () => {
                 
                 {/* Step indicator */}
                 <div className="flex items-center gap-3 text-sm font-medium text-zinc-500">
-                    <span>Step 1 of 3</span>
+                    <span>Step 1 of 5</span>
                     {/* Progress bar visual */}
                     <div className="w-20 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
                         <div className="w-1/3 h-full bg-blue-600 rounded-full"></div>
